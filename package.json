@@ -1,0 +1,35 @@
+{
+  "name": "grunt-polymer-nodewebkit-example",
+  "main": "index.html",
+  "chromium-args": "--ignore-gpu-blacklist",
+  "description": "",
+  "author": "Mark kaosat-dev Moissette",
+  "license": "MIT",
+  "version": "0.0.1",
+  "window": {
+    "title": "Ui test",
+    "toolbar": true,
+    "frame": true,
+    "width": 800,
+    "height": 600,
+    "position": "mouse",
+    "min_width": 640,
+    "min_height": 480
+  },
+  "devDependencies": {
+    "grunt": "",
+    "grunt-contrib-clean": "",
+    "grunt-contrib-copy": "",
+    "grunt-contrib-uglify": "",
+    "grunt-contrib-watch": "",
+    "grunt-download-atom-shell": "^0.8.2",
+    "grunt-exec": "",
+    "grunt-node-webkit-builder": "",
+    "grunt-text-replace": "",
+    "grunt-usemin": "",
+    "vulcanize": ""
+  },
+  "dependencies": {
+    "grunt-rename": "^0.1.3"
+  }
+}

@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <title>Node webkit + polymer example</title>
+      <script src="components/platform/platform.js"></script>
+      <link rel="import" href="example-element/example-element.html">
+  </head>
+<body>
+  <div>In the body!</div>
+
+  <example-element> </example-element>
+
+  <script>
+    window.addEventListener('polymer-ready', function() {
+	    var exampleElementInst = document.querySelector('example-element');
+      console.log("exampleElementInst",exampleElementInst);
+    });
+  </script>  
+</body>
+</html>
