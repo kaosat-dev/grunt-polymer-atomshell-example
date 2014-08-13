@@ -1,6 +1,6 @@
 {
   "name": "grunt-polymer-nodewebkit-example",
-  "main": "index.html",
+  "main": "main.js",
   "chromium-args": "--ignore-gpu-blacklist",
   "description": "",
   "author": "Mark kaosat-dev Moissette",
@@ -27,7 +27,8 @@
     "grunt-node-webkit-builder": "",
     "grunt-text-replace": "",
     "grunt-usemin": "",
-    "vulcanize": ""
+    "vulcanize": "",
+    "grunt-contrib-compress": "^0.10.0"
   },
   "dependencies": {
     "grunt-rename": "^0.1.3"

@@ -12,6 +12,7 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON("package.json")
     currentBuild: null
+    appname:null
     uglify:
       main:
         options:
@@ -42,16 +43,6 @@ module.exports = (grunt) ->
         stdout: true
         stderr: true
 
-    nodewebkit:
-      options:
-        version: "v0.7.5" #0.8.2 0.6.3 works with polymer but unresolved does not get removed, does not work from 0.7.0 onwards, 0.8.2 works only partially (wrong order of events)
-        build_dir: "_tmp/desktop" # Where the build version of my node-webkit app is saved
-        mac: false # We want to build it for mac
-        win: false # We want to build it for win
-        linux32: false # We don't need linux32
-        linux64: true # We don't need linux64
-        keep_nw: true
-      src: ["build/<%= currentBuild %>/**"] # Your node-wekit app
 
     replace:
       integration:
@@ -91,10 +82,6 @@ module.exports = (grunt) ->
           from: "global" # string replacement
           to: "fakeGlobal"
         ]
-    "download-atom-shell":
-        version: '0.15.5'
-        outputDir: 'binaries'
-        
 
     copy:
       integration:
@@ -112,17 +99,34 @@ module.exports = (grunt) ->
           src: "package.json"
           dest: "build/<%= currentBuild %>/package.json"
           {src: ['demo-data/**'], dest: 'build/<%= currentBuild %>/'}
+          {src: ['main.js'], dest: 'build/<%= currentBuild %>/main.js'}
           #{expand: true, src: ['components/**'], dest: 'build/<%= currentBuild %>'}
         ]
       desktopFinal:
         files: [
-          {expand: true, src: ['_tmp/desktop/releases/polymer-nw-example/linux64/polymer-nw-example/**'], dest: 'build/<%= currentBuild %>/'},
+          {expand: true, src: ['_tmp/desktop/**'], dest: 'build/<%= currentBuild %>'},
         ]
+      desktopFoo:
+        files: [
+          #{expand: true, cwd:'build/<%= currentBuild %>/', src: ['**'], dest: '_tmp/back'},
+          #{expand: true, cwd:'build/<%= currentBuild %>/', src: ['**'], dest: 'build/<%= currentBuild %>/resources/app'},
+          #{expand: true, cwd:'_tmp/desktop/', src: ['**'], dest: 'build/<%= currentBuild %>/',mode:true},
+        ]
+        #{expand: true,src:"build/<%= currentBuild %>/**",dest:"build/<%= currentBuild %>/resources/app/"}
 
     rename:
       desktopFinal:
-        src: '_tmp/desktop/releases/polymer-nodewebkit-example/linux64'
-        dest: 'build/<%= currentBuild %>/'
+        src: 'build/<%= currentBuild %>' 
+        dest: '_tmp/app'
+      
+      desktopFinalTOO:
+        dest: 'build/<%= currentBuild %>/resources/app' 
+        src: '_tmp/app'
+      
+      appname:
+        src: 'build/<%= currentBuild %>/atom'
+        dest: 'build/<%= currentBuild %>/<%= appname %>'  
+      
 
     htmlmin:
       integration:
@@ -137,6 +141,23 @@ module.exports = (grunt) ->
       postStandalone: ["build/<%= currentBuild %>/platform.js", "build/<%= currentBuild %>/index.js"]
 
       desktop:["build/<%= currentBuild %>"]
+      postDesktop:["build/<%= currentBuild %>/resources/default_app/"]
+    
+    "download-atom-shell":
+      version: '0.15.5'
+      outputDir: "build/<%= currentBuild %>"
+      downloadDir:'_tmp/cache'
+      rebuild:false
+      
+    compress:
+      desktop:
+        options: 
+          archive: "build/<%= currentBuild %>/<%= appname %>.zip"
+        expand: true
+        cwd: 'build/<%= currentBuild %>/'
+        src: ['**']
+        dest: ''
+          
   
   #generic
   grunt.loadNpmTasks "grunt-contrib-watch"
@@ -148,9 +169,10 @@ module.exports = (grunt) ->
   
   #builds generation
   grunt.loadNpmTasks "grunt-browserify"
-  grunt.loadNpmTasks "grunt-download-atom-shell"
   grunt.loadNpmTasks "grunt-contrib-uglify"
   grunt.loadNpmTasks "grunt-contrib-htmlmin"
+  grunt.loadNpmTasks "grunt-download-atom-shell"
+  grunt.loadNpmTasks "grunt-contrib-compress"
   
   #release cycle
 
@@ -164,8 +186,12 @@ module.exports = (grunt) ->
   @registerTask 'build', 'Build polymer-nw-example for the chosen target/platform etc', (target = 'browser', subTarget='standalone') =>
     minify = grunt.option('minify');
     platform = grunt.option('platform');
-    console.log("target", target, "sub", subTarget,"minify",minify,"platform",platform)
+    appname = grunt.option('appname');
+    compress = grunt.option('compress');
+    console.log("target", target, "sub", subTarget,"minify",minify,"platform",platform,"appname", appname)
+    
     grunt.config.set("currentBuild", "#{target}-#{subTarget}")
+    grunt.config.set("appname", appname);
     
     @task.run "clean:#{subTarget}"
     @task.run "copy:#{subTarget}"
@@ -181,7 +207,15 @@ module.exports = (grunt) ->
     if target is 'desktop'
       @task.run "replace:desktopPost"
       @task.run "copy:desktop"
-      @task.run "nodewebkit"
-      #@task.run "rename:desktopFinal"
       
+      @task.run "rename:desktopFinal"
+      @task.run "download-atom-shell"
+      @task.run "rename:desktopFinalTOO" #copy things back
+      @task.run "clean:postDesktop"#remove the default_app folder
+    
+      if appname
+        @task.run "rename:appname"
+      
+      if compress
+        @task.run "compress:desktop"#currently losing correct flags for executables, see https://github.com/gruntjs/grunt-contrib-compress/pull/110
 
