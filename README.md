@@ -23,20 +23,17 @@ building a release
 Various builds targets (browser, desktop, standalone or integration) are available ,
 but it is advised to only build the specific version you require as some of these can
 take a bit of time to generate.
+The main point of this demo is , of course, building desktop apps ( you do not need atom-shell for
+browser)
 
 Once a build is complete, you will find the resulting files in the build/target-subtarget 
-folder : for example: **build/browser-integration** or **build/desktop-standalone** etc
+folder : for example:  **build/desktop-standalone** etc
 
 To build a **standalone** app for usage on the desktop using the provided demo index.html
 
     $ grunt build:desktop:standalone
 
-
-To build it **standalone** for usage in the browser using the provided demo index.html
-
-    $ grunt build:browser:standalone
-    
-    
+        
 To build the example component for **integration** into a website:
 
     $ grunt build:browser:integration
