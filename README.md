@@ -1,7 +1,21 @@
-grunt-polymer-nodewebkit-example
+grunt-polymer-atomshell-example
 ================================
 
-Demo project using grunt to build polymer + node-webkit apps
+Demo project/utility using grunt to build polymer + atom-shell apps
+
+A demo custom element is provided in the example-element folder
+
+
+more about polymer
+-------------------
+http://www.polymer-project.org/
+
+
+more about atomshell
+--------------------
+https://github.com/atom/atom-shell
+
+
 
 
 building a release
@@ -13,18 +27,29 @@ take a bit of time to generate.
 Once a build is complete, you will find the resulting files in the build/target-subtarget 
 folder : for example: **build/browser-integration** or **build/desktop-standalone** etc
 
-To build the example component for **integration** into a website:
+To build a **standalone** app for usage on the desktop using the provided demo index.html
 
-    $ grunt build:browser:integration
+    $ grunt build:desktop:standalone
+
 
 To build it **standalone** for usage in the browser using the provided demo index.html
 
     $ grunt build:browser:standalone
+    
+    
+To build the example component for **integration** into a website:
 
-Some optional build flags are also available
+    $ grunt build:browser:integration
+
+
+optional build flags:
+---------------------
+
  - --minify
-
+ - --appname xxxx : where xxx is the name of the app you want (desktop only)
+ - --compress : generated a zip file of the whole app folder (desktop only)
 
 Notes:
 ------
-- there seem to be some issues in the custom lifecycle callbacks when using polymer with some of the latests versions of node-webkit 
+ - tested on debian wheezey(mix of stable and unstable, yikes) 64 bit
+ - in wheezy stable, there are issues with glibc, a mix of stable and unstable can help 
